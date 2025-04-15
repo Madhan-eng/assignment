@@ -1,0 +1,65 @@
+import random
+
+board = []
+
+for x in range(10):
+    board.append(["~"] * 10)
+
+ships = [
+    {"size": 5, "coordinates": []},
+    {"size": 4, "coordinates": []},
+    {"size": 3, "coordinates": []},
+    {"size": 2, "coordinates": []},
+    {"size": 1, "coordinates": []}
+]
+
+for ship in ships:
+    direction = random.choice(["h", "v"])
+    if direction == "h":
+        row = random.randint(0, 9)
+        col = random.randint(0, 10 - ship["size"])
+        for i in range(ship["size"]):
+            board[row][col + i] = "S"
+            ship["coordinates"].append((row, col + i))
+    else:
+        row = random.randint(0, 10 - ship["size"])
+        col = random.randint(0, 9)
+        for i in range(ship["size"]):
+            board[row + i][col] = "S"
+            ship["coordinates"].append((row + i, col))
+
+
+while True:
+    print("  A B C D E F G H I J")
+    for i, row in enumerate(board):
+        print(i + 1, end=" ")
+        for cell in row:
+            print(cell, end=" ")
+        print()
+
+     guess = input("Enter your guess (e.g., A5): ")
+    row = int(guess[1:]) - 1
+    col = ord(guess[0].upper()) - ord('A') 
+
+    if row < 0 or row >= 10 or col < 0 or col >= 10:
+        print("Invalid guess! Try again.")
+        continue
+
+   
+    if board[row][col] == "S":
+        print("Hit!")
+        board[row][col] = "H"
+
+    for ship in ships:
+        if (row, col) in ship["coordinates"]:
+             ship["coordinates"].remove((row, col))
+             if \len(ship["coordinates"]) == 0:
+                    print("Ship sunk!")
+    else:
+        print("Miss!")
+        board[row][col] = "M"
+
+
+    if all(len(ship["coordinates"]) == 0 for ship in ships):
+        print("Congratulations! You won!")
+        break
